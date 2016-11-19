@@ -1,0 +1,28 @@
+{
+  "name": "alexa-homekit-serv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "babel src --out-dir build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.6",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "homebridge": "^0.4.6",
+    "homebridge-functor": "^0.1.0",
+    "homebridge-nest": "^1.1.2",
+    "homebridge-radiora": "^2.1.0",
+    "homebridge-sonos": "^0.1.0",
+    "node-cec": "^0.1.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-gasbuddy": "^1.0.0",
+    "babel-register": "^6.16.3",
+    "nodemon": "^1.11.0"
+  }
+}

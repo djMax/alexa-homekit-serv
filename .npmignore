@@ -1,0 +1,5 @@
+.wercker
+node_modules/
+persist/
+logs/
+accessories/
