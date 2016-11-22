@@ -14,6 +14,9 @@ var https = require('https');
 var crypto = require('crypto');
 var URL = require('url');
 
+var REMOTE_CLOUD_BASE_URL = process.env.REMOTE_CLOUD_BASE_URL;
+var REMOTE_CLOUD_OTP_SECRET = process.env.REMOTE_CLOUD_OTP_SECRET;
+
 // Copied from https://github.com/guyht/notp
 var totp = {};
 
