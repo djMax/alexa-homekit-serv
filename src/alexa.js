@@ -161,8 +161,15 @@ export default class AlexaHandlers {
         setPower(device, name === 'TurnOn', () => {
           this.report(req, res);
         });
+        return;
       }
-      return;
+    } else if (namespace === 'Alexa.BrightnessController') {
+      if (name === 'SetBrightness') {
+        device.setBrightness(req.body.directive.payload.brightness, () => {
+          this.report(req, res);
+        });
+        return;
+      }
     }
     res.status(500).send('fail');
 
