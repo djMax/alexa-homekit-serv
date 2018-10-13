@@ -14,6 +14,7 @@ export default class AlexaHandlers {
 
     app.get('/devices', (...args) => this.getDevices(...args));
     app.post('/control', (...args) => this.control(...args));
+    app.post('/report', (...args) => this.report(...args));
   }
 
   getDevices(req, res) {
@@ -89,6 +90,51 @@ export default class AlexaHandlers {
     });
 
     res.json({ endpoints });
+  }
+
+  report(req, res) {
+    const deviceId = req.body.directive.endpoint.endpointId;
+
+    let device;
+    const matches = Object.entries(this.rra.accessories)
+      .filter((arr) => {
+        const [i,a] = arr;
+        return (a.serial === deviceId);
+      });
+    if (matches.length) {
+      device = matches[0][1];
+      device.get('brightness', (err, level) => {
+        const context = {
+          properties: [{
+            namespace: 'Alexa.EndpointHealth',
+            name: 'connectivity',
+            value: {
+              value: 'OK',
+            },
+            timeOfSample: new Date().toISOString(),
+            uncertaintyInMilliseconds: 0
+          }, {
+            namespace: 'Alexa.PowerController',
+            name: 'powerState',
+            value: level ? 'ON' : 'OFF',
+            timeOfSample: new Date().toISOString(),
+            uncertaintyInMilliseconds: 0
+          }],
+        };
+        if (!device.isSwitch) {
+          context.properties.push({
+            namespace: 'Alexa.BrightnessController',
+            name: 'brightness',
+            value: level,
+            timeOfSample: new Date().toISOString(),
+            uncertaintyInMilliseconds: 0
+          })
+        }
+        res.json(context);
+      });
+    } else {
+      res.json({ properties: [] });
+    }
   }
 
   control(req, res) {

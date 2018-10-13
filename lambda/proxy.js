@@ -28,7 +28,7 @@ exports.handler = function (event, context) {
 
   log('Input', event);
 
-  switch (event.header.namespace) {
+  switch (event.directive.header.namespace) {
 
     /**
      * The namespace of "Discovery" indicates a request is being made to the lambda for
@@ -38,6 +38,12 @@ exports.handler = function (event, context) {
      */
     case 'Alexa.Discovery':
       handleDiscovery(event, context);
+      break;
+
+    case 'Alexa':
+      if (event.directive.header.name === 'ReportState') {
+        handleReport(event, context);
+      }
       break;
 
     /**
@@ -68,11 +74,11 @@ function handleDiscovery(event, context) {
   /**
    * Crafting the response header
    */
-  var headers = {
+  const headers = {
     namespace: 'Alexa.Discovery',
     name: 'Discover.Response',
     payloadVersion: '3',
-    messageId: event.header.messageId
+    messageId: event.directive.header.messageId
   };
 
   makeRequest('GET', REMOTE_CLOUD_BASE_URL + '/devices?otp=' + totp.gen(REMOTE_CLOUD_OTP_SECRET))
@@ -83,7 +89,7 @@ function handleDiscovery(event, context) {
       */
       var result = {
         header: headers,
-        payload: JSON.parse(body).endpoints,
+        payload: JSON.parse(body),
       };
 
       log('Discovery', JSON.stringify(result, null, '\t'));
@@ -114,6 +120,36 @@ function handleControl(event, context) {
     });
 }
 
+/**
+ * Control events are processed here.
+ * This is called when Alexa requests an action (IE turn off appliance).
+ */
+function handleReport(event, context) {
+  makeRequest('POST',
+    REMOTE_CLOUD_BASE_URL + '/report?otp=' + totp.gen(REMOTE_CLOUD_OTP_SECRET),
+    JSON.stringify(event))
+    .then((body) => {
+      log('Report', JSON.stringify(body, null, '\t'));
+      const header = {
+        namespace: 'Alexa',
+        name: 'StateReport',
+        payloadVersion: '3',
+        correlationToken: event.directive.header.correlationToken,
+        messageId: event.directive.header.messageId
+      };
+      context.succeed({
+        event: {
+          header,
+          endpoint: event.directive.endpoint,
+        },
+        context: JSON.parse(body),
+      });
+    })
+    .catch((error) => {
+      log('RequestFailed', error);
+      context.fail('Request failed: ' + error.message);
+    });
+}
 /**
  * Utility functions.
  */
