@@ -138,8 +138,7 @@ export default class AlexaHandlers {
   }
 
   control(req, res) {
-    const deviceId = req.body.payload.appliance.applianceId;
-    const activity = req.body.header.name;
+    const deviceId = req.body.directive.endpoint.endpointId;
 
     let device;
     const matches = Object.entries(this.rra.accessories)
@@ -156,6 +155,18 @@ export default class AlexaHandlers {
       }
     }
 
+    const { namespace, name } = req.body.directive.header;
+    if (namespace === 'Aelxa.PowerController') {
+      if (name === 'TurnOn' || name === 'TurnOff') {
+        setPower(device, name === 'TurnOn', () => {
+          this.report(req, res);
+        });
+      }
+      return;
+    }
+    res.status(500).send('fail');
+
+    /*
     const confirm = (name) => ({
       header: {
         name,
@@ -189,6 +200,6 @@ export default class AlexaHandlers {
       });
     } else {
       res.status(500).send('fail');
-    }
+    }*/
   }
 }

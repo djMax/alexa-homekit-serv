@@ -46,12 +46,8 @@ exports.handler = function (event, context) {
       }
       break;
 
-    /**
-     * The namespace of "Control" indicates a request is being made to us to turn a
-     * given device on, off or brighten. This message comes with the "appliance"
-     * parameter which indicates the appliance that needs to be acted on.
-     */
-    case 'Alexa.ConnectedHome.Control':
+    case 'Alexa.BrightnessController':
+    case 'Alexa.PowerController':
       handleControl(event, context);
       break;
 
@@ -87,14 +83,14 @@ function handleDiscovery(event, context) {
       * Craft the final response back to Alexa Smart Home Skill. This will include all the
       * discoverd appliances.
       */
-      var result = {
+      var event = {
         header: headers,
         payload: JSON.parse(body),
       };
 
-      log('Discovery', JSON.stringify(result, null, '\t'));
+      log('Discovery', JSON.stringify(event, null, '\t'));
 
-      context.succeed(result);
+      context.succeed({ event });
     })
     .catch((error) => {
       log('RequestFailed', error);
