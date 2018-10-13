@@ -108,7 +108,7 @@ function handleControl(event, context) {
     JSON.stringify(event))
     .then((body) => {
       log('Control', JSON.stringify(body, null, '\t'));
-      context.succeed(JSON.parse(body));
+      context.succeed({ event: JSON.parse(body) });
     })
     .catch((error) => {
       log('RequestFailed', error);

@@ -156,7 +156,7 @@ export default class AlexaHandlers {
     }
 
     const { namespace, name } = req.body.directive.header;
-    if (namespace === 'Aelxa.PowerController') {
+    if (namespace === 'Alexa.PowerController') {
       if (name === 'TurnOn' || name === 'TurnOff') {
         setPower(device, name === 'TurnOn', () => {
           this.report(req, res);
