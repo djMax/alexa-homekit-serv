@@ -36,7 +36,7 @@ exports.handler = function (event, context) {
      * can use the accessToken that is made available as part of the payload to determine
      * the customer.
      */
-    case 'Alexa.ConnectedHome.Discovery':
+    case 'Alexa.Discovery':
       handleDiscovery(event, context);
       break;
 
@@ -69,9 +69,9 @@ function handleDiscovery(event, context) {
    * Crafting the response header
    */
   var headers = {
-    namespace: 'Alexa.ConnectedHome.Discovery',
-    name: 'DiscoverAppliancesResponse',
-    payloadVersion: '2',
+    namespace: 'Alexa.Discovery',
+    name: 'Discover.Response',
+    payloadVersion: '3',
     messageId: event.header.messageId
   };
 
@@ -83,9 +83,7 @@ function handleDiscovery(event, context) {
       */
       var result = {
         header: headers,
-        payload: {
-          discoveredAppliances: JSON.parse(body)
-        }
+        payload: JSON.parse(body).endpoints,
       };
 
       log('Discovery', JSON.stringify(result, null, '\t'));

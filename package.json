@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "alexa-sdk": "^1.0.6",
     "body-parser": "^1.15.2",
     "confit": "^2.1.0",
     "express": "^4.14.0",

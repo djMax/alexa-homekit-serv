@@ -17,38 +17,78 @@ export default class AlexaHandlers {
   }
 
   getDevices(req, res) {
-    const alexaVersion = Object.entries(this.rra.accessories)
+    const endpoints = Object
+      .entries(this.rra.accessories)
       .map((arr) => {
         const [i,a] = arr;
-        const basic = {
-          applianceId: a.serial,
-          manufacturerName: 'Lutron',
-          modelName: a.isSwitch ? 'RRSwitch' : 'RRDimmer',
-          version: '1',
+        const ep = {
+          endpointId: a.serial,
           friendlyName: a.name,
-          friendlyDescription: a.name,
-          isReachable: true,
-          actions: [ 'turnOn', 'turnOff' ],
+          description: a.name,
+          manufacturerName: 'Lutron',
+          displayCategories: [a.isSwitch ? 'SWITCH' : 'LIGHT'],
+          capabilities: [{
+            type: 'AlexaInterface',
+            interface: 'Alexa',
+            version: 3,
+          }, {
+            type: 'AlexaInterface',
+            interface: 'Alexa.PowerController',
+            version: 3,
+            properties: {
+              supported: [
+                {
+                  name: 'powerState',
+                }
+              ],
+              retrievable: true
+            },
+          }],
         };
         if (!a.isSwitch) {
-          basic.actions.push(...['setPercentage', 'incrementPercentage', 'decrementPercentage']);
+          ep.capabilities.push({
+            type: 'AlexaInterface',
+            interface: 'Alexa.BrightnessController',
+            version: 3,
+            properties: {
+              supported: [
+                {
+                  name: 'brightness',
+                }
+              ],
+              retrievable: true
+            },
+          })
         }
-        return basic;
+        return ep;
       });
-    this.func.accessories.forEach((a) => {
-      alexaVersion.push({
-        applianceId: a.config.serial,
-        manufacturerName: a.config.manufacturer,
-        modelName: a.config.model || 'Generic',
-        version: '1',
-        friendlyName: a.config.name,
-        friendlyDescription: a.config.name,
-        isReachable: true,
-        actions: [ 'turnOn', 'turnOff' ],
+    this.func.accessories.forEach(({ config }) => {
+      endpoints.push({
+        endpointId: config.serial,
+        friendlyName: config.name,
+        description: config.name,
+        manufacturerName: config.manufacturer,
+        displayCategories: config.categories || ['SWITCH'],
+        capabilities: [{
+          type: 'AlexaInterface',
+          interface: 'Alexa',
+          version: 3,
+        }, {
+          type: 'AlexaInterface',
+          interface: 'Alexa.PowerController',
+          version: 3,
+          properties: {
+            supported: [
+              {
+                name: 'powerState',
+              }
+            ],
+          },
+        }],
       });
     });
 
-    res.json(alexaVersion);
+    res.json({ endpoints });
   }
 
   control(req, res) {
