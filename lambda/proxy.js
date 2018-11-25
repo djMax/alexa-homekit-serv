@@ -70,7 +70,7 @@ function handleDiscovery(event, context) {
   /**
    * Crafting the response header
    */
-  const headers = {
+  const header = {
     namespace: 'Alexa.Discovery',
     name: 'Discover.Response',
     payloadVersion: '3',
@@ -84,7 +84,7 @@ function handleDiscovery(event, context) {
       * discoverd appliances.
       */
       var event = {
-        header: headers,
+        header,
         payload: JSON.parse(body),
       };
 
@@ -108,7 +108,15 @@ function handleControl(event, context) {
     JSON.stringify(event))
     .then((body) => {
       log('Control', JSON.stringify(body, null, '\t'));
-      context.succeed({ event: JSON.parse(body) });
+      const header = {
+        namespace: 'Alexa',
+        name: 'Response',
+        payloadVersion: '3',
+        correlationToken: event.directive.header.correlationToken,
+        messageId: event.directive.header.messageId
+      };
+
+      context.succeed({ event: { header, payload: {} }, context: JSON.parse(body) });
     })
     .catch((error) => {
       log('RequestFailed', error);

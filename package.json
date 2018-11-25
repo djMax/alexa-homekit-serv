@@ -9,22 +9,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "body-parser": "^1.15.2",
     "confit": "^2.1.0",
     "express": "^4.14.0",
     "homebridge": "^0.4.6",
     "homebridge-functor": "^0.1.0",
-    "homebridge-nest": "^1.1.2",
+    "homebridge-nest": "^2.1.4",
     "homebridge-radiora": "^2.1.0",
-    "homebridge-sonos": "^0.1.0",
+    "homebridge-sonos": "^0.2.4",
     "node-cec": "^0.1.2",
     "notp": "^2.0.3",
     "shortstop-handlers": "^1.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.16.0",
-    "babel-preset-gasbuddy": "^1.0.0",
-    "babel-register": "^6.16.3",
+    "@babel/cli": "^7.1.5",
+    "@babel/register": "^7.0.0",
+    "babel-preset-gasbuddy": "^4.2.0",
     "nodemon": "^1.11.0"
   }
 }
